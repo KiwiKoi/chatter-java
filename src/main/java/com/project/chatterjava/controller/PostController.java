@@ -49,12 +49,11 @@ public class PostController {
       System.out.println("authorId: " + authorId);
 
       Optional<User> author = userRepository.findById(authorId);
-      if (!author.isPresent()) {
+      if (author.isEmpty()) {
         System.out.println("Author not found for id: " + authorId);
         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
       }
 
-      if (author.isPresent()) {
         post.setAuthor(author.get());
         post.setPublished(false);
 
@@ -63,9 +62,6 @@ public class PostController {
         System.out.println("newPost: " + newPost);
 
         return new ResponseEntity<>(newPost, HttpStatus.CREATED);
-      } else {
-        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-      }
     } catch (RuntimeException e) {
       System.out.println("Error saving post: " + e.getMessage());
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
