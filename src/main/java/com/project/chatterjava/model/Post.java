@@ -1,10 +1,9 @@
 package com.project.chatterjava.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "posts")
@@ -23,17 +22,17 @@ public class Post {
   private String image;
 
   @Column(name = "created_at")
-  private LocalDateTime createdAt;
+  private LocalDateTime created_at;
 
   @Column(name = "updated_at")
-  private LocalDateTime updatedAt;
+  private LocalDateTime updated_at;
 
   @Column(name = "published")
   private Boolean published;
 
-  @JsonBackReference
+  @JsonIgnoreProperties("posts")
   @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  @JoinColumn(name = "author", referencedColumnName = "id")
+  @JoinColumn(name = "user_id", referencedColumnName = "id")
   private User author;
 
   public Post() {
@@ -73,19 +72,19 @@ public class Post {
   }
 
   public LocalDateTime getCreatedAt() {
-    return createdAt;
+    return created_at;
   }
 
-  public void setCreatedAt(LocalDateTime createdAt) {
-    this.createdAt = createdAt;
+  public void setCreatedAt(LocalDateTime created_at) {
+    this.created_at = created_at;
   }
 
   public LocalDateTime getUpdatedAt() {
-    return updatedAt;
+    return updated_at;
   }
 
-  public void setUpdatedAt(LocalDateTime updatedAt) {
-    this.updatedAt = updatedAt;
+  public void setUpdatedAt(LocalDateTime updated_at) {
+    this.updated_at = updated_at;
   }
 
   public Boolean getPublished() {

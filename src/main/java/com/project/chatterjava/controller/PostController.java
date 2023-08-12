@@ -4,18 +4,14 @@ import com.project.chatterjava.model.Post;
 import com.project.chatterjava.model.User;
 import com.project.chatterjava.repository.PostRepository;
 import com.project.chatterjava.repository.UserRepository;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/posts/")
@@ -40,26 +36,24 @@ public class PostController {
     }
   }
 
-  @PostMapping("/{authorId}")
+  @PostMapping
   public ResponseEntity<Post> createPost(
     @RequestBody Post post,
-    @PathVariable String authorId
+    @RequestParam String user_id
   ) {
     try {
-      System.out.println("authorId: " + authorId);
+      Optional<User> author = userRepository.findById(user_id);
 
-      Optional<User> author = userRepository.findById(authorId);
       if (author.isEmpty()) {
-        System.out.println("Author not found for id: " + authorId);
+        System.out.println("Author not found for id: " + user_id);
         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
       }
 
         post.setAuthor(author.get());
         post.setPublished(false);
+        post.setCreatedAt(LocalDateTime.now());
 
-        System.out.println("post: " + post);
         Post newPost = postRepository.save(post);
-        System.out.println("newPost: " + newPost);
 
         return new ResponseEntity<>(newPost, HttpStatus.CREATED);
     } catch (RuntimeException e) {
@@ -79,12 +73,12 @@ public class PostController {
     }
   }
 
-  @GetMapping("/user/{userId}")
+  @GetMapping("/user/{user_id}")
   public ResponseEntity<List<Post>> getPostsByUser(
-    @PathVariable String userId
+    @PathVariable String user_id
   ) {
     try {
-      List<Post> posts = postRepository.findByAuthorId(userId);
+      List<Post> posts = postRepository.findByAuthorId(user_id);
       if (posts.isEmpty()) {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
       }

@@ -6,22 +6,18 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
 
   @PersistenceContext
@@ -43,40 +39,23 @@ public class UserController {
     }
   }
 
-  // @GetMapping("/{id}")
-  // public User getUserById(@PathVariable String id) {
-  //   Optional<User> user = entityManager
-  //     .createQuery("SELECT u FROM User u WHERE u.id = :id", User.class)
-  //     .setParameter("id", id)
-  //     .getResultList()
-  //     .stream()
-  //     .findFirst();
-  //   return user.orElse(null);
-  // }
-
-  @GetMapping("/{id}")
-  public ResponseEntity<User> getUserById(@PathVariable String id) {
+  @GetMapping("/{userId}")
+  public ResponseEntity<User> getUserById(@PathVariable String userId) {
     try {
-      Optional<User> userData = userRepository.findById(id);
-      if (userData.isPresent()) {
-        return new ResponseEntity<>(userData.get(), HttpStatus.OK);
-      } else {
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-      }
+      Optional<User> userData = userRepository.findById(userId);
+        return userData.map(user -> new ResponseEntity<>(user, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     } catch (Exception e) {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  @PostMapping(path="/create/{userId}")
+  @PostMapping(path="/create/{user_id}")
   public ResponseEntity<User> createUser(
     @RequestBody User user,
-    @PathVariable String userId
+    @PathVariable String user_id
   ) {
     try {
-      System.out.println("userId: " + userId);
-      System.out.println("userId: " + user);
-      user.setId(userId);
+      user.setId(user_id);
       user.setEmail(user.getEmail());
       User newUser = userRepository.save(user);
 
