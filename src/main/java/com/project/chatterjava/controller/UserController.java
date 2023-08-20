@@ -20,14 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 public class UserController {
 
-  @PersistenceContext
-  private EntityManager entityManager;
-
   @Autowired
   UserRepository userRepository;
 
   @GetMapping("/all")
-  public ResponseEntity<List<User>> getAllusers() {
+  public ResponseEntity<List<User>> getAllUsers() {
     try {
       List<User> users = userRepository.findAll();
       if (users.isEmpty()) {
@@ -66,15 +63,5 @@ public class UserController {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
-  // @PutMapping("/update/{userId}")
-  // public ResponseEntity<User> updateUser(
-  //   @RequestBody User user,
-  //   @PathVariable String userId
-  // ){
-  //   try {
-
-  //   }
-  // }
 
 }
